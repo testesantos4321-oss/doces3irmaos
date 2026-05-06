@@ -188,6 +188,19 @@ body {
   transition: transform 0.05s linear;
 }
 
+/* ── Print / PDF ─────────────────────────────────────────── */
+@media print {
+  .led-frame, nav, header, footer, .no-print { display: none !important; }
+  body { background: #fff !important; color: #111 !important; }
+  #report-body [style*="background: #1a1208"],
+  #report-body [style*="background: #221808"] { background: #f9f6f0 !important; }
+  #report-body [style*="color: #e4d8c0"],
+  #report-body [style*="color: #f3e6cc"] { color: #222 !important; }
+  #report-body [style*="color: #a08868"],
+  #report-body [style*="color: #6a5438"] { color: #555 !important; }
+  @page { margin: 18mm; size: A4; }
+}
+
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    LED BORDER — glowing orbs that travel around screen edges
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */

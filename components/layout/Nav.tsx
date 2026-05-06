@@ -49,6 +49,7 @@ const groups = [
     links: [
       { href: "/metas", label: "🎯 Metas" },
       { href: "/crm", label: "🤝 CRM" },
+      { href: "/relatorio", label: "📄 Relatório" },
       { href: "/config", label: "⚙️ Config" },
     ],
   },

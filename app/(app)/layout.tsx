@@ -3,16 +3,29 @@ import { Nav } from "@/components/layout/Nav";
 import { LedBorder } from "@/components/layout/LedBorder";
 import { NotesWidget } from "@/components/shared/NotesWidget";
 import { HelpModal } from "@/components/shared/HelpModal";
+import { QuickSale } from "@/components/shared/QuickSale";
+import { createClient } from "@/lib/supabase/server";
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+export default async function AppLayout({ children }: { children: React.ReactNode }) {
+  // Fetch clients server-side so QuickSale can pre-fill price/qty
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const { data: clientes } = user
+    ? await supabase
+        .from("clientes")
+        .select("nome, preco, qtd")
+        .eq("user_id", user.id)
+        .order("nome")
+    : { data: [] };
+
   return (
     <>
-      {/* Ambient LED frame — fixed, z-indexed above everything except modals */}
+      {/* Ambient LED frame */}
       <LedBorder />
 
       <Header />
       <div
-        className="text-center py-1.5 text-xs italic tracking-wide"
+        className="text-center py-1.5 text-xs italic tracking-wide no-print"
         style={{
           background: "linear-gradient(90deg, #0f0700, #1c1005, #0f0700)",
           borderBottom: "1px solid #2c2010",
@@ -29,21 +42,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         {children}
       </main>
       <footer
-        className="text-center mt-8"
+        className="text-center mt-8 no-print"
         style={{
           background: "linear-gradient(135deg, #110800, #1c1005)",
           borderTop: "3px solid #c8872c",
           padding: "28px",
         }}
       >
-        <div
-          style={{
-            fontFamily: "Pacifico, cursive",
-            color: "#e5b050",
-            fontSize: "1.3em",
-            marginBottom: 6,
-          }}
-        >
+        <div style={{ fontFamily: "Pacifico, cursive", color: "#e5b050", fontSize: "1.3em", marginBottom: 6 }}>
           Doces 3 Irmãos
         </div>
         <div style={{ color: "#a08868", fontSize: "0.78em", fontStyle: "italic", marginBottom: 8 }}>
@@ -54,7 +60,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
       </footer>
 
-      {/* Floating widgets — rendered outside main so they stay fixed on all pages */}
+      {/* Floating widgets — fixed position, all pages */}
+      <QuickSale clientes={clientes || []} />
       <NotesWidget />
       <HelpModal />
     </>
