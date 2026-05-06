@@ -24,6 +24,7 @@ export default async function DashboardPage() {
     { data: meta },
     { data: eventos },
     { data: contas },
+    { data: todasReceitas },
   ] = await Promise.all([
     supabase.from("receitas").select("*").eq("user_id", uid).gte("data", inicio),
     supabase.from("despesas").select("*").eq("user_id", uid).gte("data", inicio),
@@ -48,6 +49,8 @@ export default async function DashboardPage() {
       .eq("user_id", uid)
       .eq("pago", false)
       .lte("venc", emSete),
+    // All-time revenue per client for ranking
+    supabase.from("receitas").select("cliente, total").eq("user_id", uid),
   ]);
 
   const tR = (receitas || []).reduce((a, r) => a + r.total, 0);
@@ -80,6 +83,16 @@ export default async function DashboardPage() {
   const pieData = Object.entries(catTotals).map(([name, value]) => ({ name, value }));
 
   const metaPct = meta ? Math.min((tR / meta.rec) * 100, 100) : 0;
+
+  // ── Client ranking (all-time) ──────────────────────────────
+  const revenueMap: Record<string, number> = {};
+  (todasReceitas || []).forEach((r) => {
+    if (r.cliente) revenueMap[r.cliente] = (revenueMap[r.cliente] || 0) + r.total;
+  });
+  const rankList = Object.entries(revenueMap)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 5);
+  const maxRev = rankList[0]?.[1] || 1;
 
   // ── Reusable card wrapper ──────────────────────────────────────
   const Card = ({ children }: { children: React.ReactNode }) => (
@@ -212,6 +225,47 @@ export default async function DashboardPage() {
           <RevenueLineChart data={chartData} />
         </Card>
       </div>
+
+      {/* ── Client ranking ────────────────────────────────────── */}
+      {rankList.length > 0 && (
+        <div className="mb-4">
+          <Card>
+            <CardTitle text="🏆 Top Clientes — Faturamento Acumulado" />
+            <div className="space-y-3">
+              {rankList.map(([nome, total], idx) => {
+                const medals = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣"];
+                const pct = Math.round((total / maxRev) * 100);
+                const barColor = idx === 0
+                  ? "linear-gradient(90deg,#c8872c,#f4ce7a)"
+                  : idx === 1
+                  ? "linear-gradient(90deg,#909098,#c0c0d0)"
+                  : idx === 2
+                  ? "linear-gradient(90deg,#a06830,#d09060)"
+                  : "linear-gradient(90deg,#4878b0,#6a9ad0)";
+
+                return (
+                  <div key={nome} className="flex items-center gap-3">
+                    <span className="text-sm w-6 text-center shrink-0">{medals[idx]}</span>
+                    <span className="text-sm w-32 truncate shrink-0" style={{ color: "#e4d8c0" }}>{nome}</span>
+                    <div className="flex-1 rounded-full h-2.5 overflow-hidden" style={{ background: "#2c2010" }}>
+                      <div
+                        className="h-full rounded-full progress-fill"
+                        style={{ width: `${pct}%`, background: barColor }}
+                      />
+                    </div>
+                    <span
+                      className="text-xs w-24 text-right shrink-0"
+                      style={{ fontFamily: "DM Mono, monospace", color: "#e5b050" }}
+                    >
+                      {fmt(total)}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
+        </div>
+      )}
 
       {/* ── Bottom row: pie + events + bills ──────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
