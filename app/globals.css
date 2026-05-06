@@ -181,3 +181,137 @@ body {
 .row-animate > *:nth-child(3) { animation-delay: 120ms; }
 .row-animate > *:nth-child(4) { animation-delay: 180ms; }
 .row-animate > *:nth-child(5) { animation-delay: 240ms; }
+
+/* ── Parallax banner ─────────────────────────────────────── */
+.parallax-bg {
+  will-change: transform;
+  transition: transform 0.05s linear;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   LED BORDER — glowing orbs that travel around screen edges
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.led-frame {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9997;
+  overflow: hidden;
+}
+
+/* Base edge strips — 2px lines */
+.led-edge {
+  position: absolute;
+  overflow: hidden;
+}
+.led-top    { top: 0;    left: 0; right: 0;  height: 2px; }
+.led-bottom { bottom: 0; left: 0; right: 0;  height: 2px; }
+.led-left   { left: 0;  top: 0;  bottom: 0; width: 2px; }
+.led-right  { right: 0; top: 0;  bottom: 0; width: 2px; }
+
+/* Orb — horizontal (top/bottom) */
+.led-orb {
+  position: absolute;
+  border-radius: 9999px;
+  pointer-events: none;
+}
+
+/* Horizontal orb → left to right */
+@keyframes led-h {
+  0%   { left: -220px; opacity: 0; }
+  4%   { opacity: 1; }
+  96%  { opacity: 1; }
+  100% { left: calc(100% + 220px); opacity: 0; }
+}
+/* Horizontal orb ← right to left (bottom) */
+@keyframes led-h-rev {
+  0%   { right: -220px; opacity: 0; }
+  4%   { opacity: 1; }
+  96%  { opacity: 1; }
+  100% { right: calc(100% + 220px); opacity: 0; }
+}
+/* Vertical orb ↓ top to bottom */
+@keyframes led-v {
+  0%   { top: -180px; opacity: 0; }
+  4%   { opacity: 1; }
+  96%  { opacity: 1; }
+  100% { top: calc(100% + 180px); opacity: 0; }
+}
+/* Vertical orb ↑ bottom to top */
+@keyframes led-v-rev {
+  0%   { bottom: -180px; opacity: 0; }
+  4%   { opacity: 1; }
+  96%  { opacity: 1; }
+  100% { bottom: calc(100% + 180px); opacity: 0; }
+}
+
+/* Horizontal orb sizing (top/bottom) */
+.led-orb-h {
+  top: -3px; height: 8px; width: 220px;
+  background: radial-gradient(ellipse at center,
+    rgba(244,206,122,1) 0%,
+    rgba(229,176,80,0.9) 25%,
+    rgba(200,135,44,0.6) 55%,
+    transparent 100%);
+  filter: blur(1.5px);
+  animation: led-h 6s linear infinite;
+}
+.led-orb-h-rev {
+  top: -3px; height: 8px; width: 220px; right: -220px;
+  background: radial-gradient(ellipse at center,
+    rgba(244,206,122,1) 0%,
+    rgba(229,176,80,0.9) 25%,
+    rgba(200,135,44,0.6) 55%,
+    transparent 100%);
+  filter: blur(1.5px);
+  animation: led-h-rev 6s linear infinite;
+}
+
+/* Vertical orb sizing (right/left) */
+.led-orb-v {
+  left: -3px; width: 8px; height: 180px;
+  background: radial-gradient(ellipse at center,
+    rgba(244,206,122,1) 0%,
+    rgba(229,176,80,0.9) 25%,
+    rgba(200,135,44,0.6) 55%,
+    transparent 100%);
+  filter: blur(1.5px);
+  animation: led-v 6s linear infinite;
+}
+.led-orb-v-rev {
+  left: -3px; width: 8px; height: 180px; bottom: -180px;
+  background: radial-gradient(ellipse at center,
+    rgba(244,206,122,1) 0%,
+    rgba(229,176,80,0.9) 25%,
+    rgba(200,135,44,0.6) 55%,
+    transparent 100%);
+  filter: blur(1.5px);
+  animation: led-v-rev 6s linear infinite;
+}
+
+/* Static dim baseline for the edges */
+.led-top, .led-bottom {
+  background: linear-gradient(90deg,
+    transparent 0%, rgba(200,135,44,.08) 20%,
+    rgba(200,135,44,.08) 80%, transparent 100%);
+}
+.led-left, .led-right {
+  background: linear-gradient(180deg,
+    transparent 0%, rgba(200,135,44,.08) 20%,
+    rgba(200,135,44,.08) 80%, transparent 100%);
+}
+
+/* ── Nav tab glow on active ──────────────────────────────── */
+.nav-group-active {
+  position: relative;
+}
+.nav-group-active::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 10%; right: 10%;
+  height: 1px;
+  border-radius: 1px;
+  filter: blur(3px);
+  opacity: .8;
+}

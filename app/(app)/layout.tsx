@@ -1,9 +1,15 @@
 import { Header } from "@/components/layout/Header";
 import { Nav } from "@/components/layout/Nav";
+import { LedBorder } from "@/components/layout/LedBorder";
+import { NotesWidget } from "@/components/shared/NotesWidget";
+import { HelpModal } from "@/components/shared/HelpModal";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
+      {/* Ambient LED frame — fixed, z-indexed above everything except modals */}
+      <LedBorder />
+
       <Header />
       <div
         className="text-center py-1.5 text-xs italic tracking-wide"
@@ -47,6 +53,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           Sistema de Gestão · Doces 3 Irmãos · Garanhuns, PE · 2026
         </div>
       </footer>
+
+      {/* Floating widgets — rendered outside main so they stay fixed on all pages */}
+      <NotesWidget />
+      <HelpModal />
     </>
   );
 }

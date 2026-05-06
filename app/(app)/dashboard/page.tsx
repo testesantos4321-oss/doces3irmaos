@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
-import { MetricCard } from "@/components/shared/MetricCard";
+import { AnimatedMetricCard } from "@/components/shared/AnimatedMetricCard";
+import { ParallaxBanner } from "@/components/shared/ParallaxBanner";
 import { RevenueLineChart, ExpensePieChart } from "@/components/dashboard/RevenueChart";
-import { PageHeader } from "@/components/shared/PageHeader";
 import { fmt, today, formatDate, mesAtual, inicioMes } from "@/lib/utils";
 
 export default async function DashboardPage() {
@@ -84,7 +84,7 @@ export default async function DashboardPage() {
   // ── Reusable card wrapper ──────────────────────────────────────
   const Card = ({ children }: { children: React.ReactNode }) => (
     <div
-      className="rounded-xl p-5"
+      className="rounded-xl p-5 card-hover animate-fade-in"
       style={{ background: "#1a1208", border: "1px solid #3a2c18" }}
     >
       {children}
@@ -131,15 +131,16 @@ export default async function DashboardPage() {
 
   return (
     <div>
-      <PageHeader title="Dashboard" subtitle={`Visão do mês · ${mes}`} />
+      {/* ── Parallax banner replaces flat PageHeader ─────────── */}
+      <ParallaxBanner mes={mes} />
 
-      {/* ── Metric cards ──────────────────────────────────────── */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5 mb-6">
-        <MetricCard icon="💚" label="Receita Bruta" value={fmt(tR)} sub="Total vendas" color="green" />
-        <MetricCard icon="🔴" label="Despesas Op." value={fmt(tD)} sub="Custos negócio" color="red" />
-        <MetricCard icon="👨‍👩‍👧" label="Pessoal" value={fmt(tP)} sub="Gastos família" color="blue" />
-        <MetricCard icon="🍯" label="Lucro Líquido" value={fmt(lucro)} sub={`Margem ${margem}%`} color="gold" />
-        <MetricCard icon="📦" label="Fornadas" value={String((fornadas || []).length)} sub="Registradas" color="purple" />
+      {/* ── Animated metric cards ─────────────────────────────── */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5 mb-6 row-animate">
+        <AnimatedMetricCard icon="💚" label="Receita Bruta" rawValue={tR} prefix="R$" sub="Total vendas" color="green" delay={0} />
+        <AnimatedMetricCard icon="🔴" label="Despesas Op." rawValue={tD} prefix="R$" sub="Custos negócio" color="red" delay={80} />
+        <AnimatedMetricCard icon="👨‍👩‍👧" label="Pessoal" rawValue={tP} prefix="R$" sub="Gastos família" color="blue" delay={160} />
+        <AnimatedMetricCard icon="🍯" label="Lucro Líquido" rawValue={lucro} prefix="R$" sub={`Margem ${margem}%`} color="gold" delay={240} />
+        <AnimatedMetricCard icon="📦" label="Fornadas" rawValue={(fornadas || []).length} sub="Registradas" color="purple" delay={320} />
       </div>
 
       {/* ── Top row: profit split + line chart ────────────────── */}
