@@ -46,8 +46,8 @@ export function MonthlyChart({ data }: { data: MonthPoint[] }) {
             color: "#e4d8c0",
             fontSize: 12,
           }}
-          formatter={(val: number, name: string) => [
-            val.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
+          formatter={(val, name) => [
+            Number(val).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
             name === "receita" ? "Receita" : name === "despesa" ? "Despesa" : "Lucro",
           ]}
           labelStyle={{ color: "#a08868", marginBottom: 4 }}
