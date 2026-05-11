@@ -28,6 +28,7 @@ const groups = [
     links: [
       { href: "/fornadas", label: "🍯 Fornadas" },
       { href: "/estoque", label: "📦 Estoque" },
+      { href: "/produtos", label: "🛍️ Produtos" },
     ],
   },
   {
