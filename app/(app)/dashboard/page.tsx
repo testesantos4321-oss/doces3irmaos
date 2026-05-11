@@ -144,10 +144,12 @@ export default async function DashboardPage() {
 
   return (
     <div>
-      {/* ── Parallax banner replaces flat PageHeader ─────────── */}
-      <ParallaxBanner mes={mes} />
+      {/* ── Parallax banner ────────────────────────────────────── */}
+      <div className="reveal-up">
+        <ParallaxBanner mes={mes} />
+      </div>
 
-      {/* ── Animated metric cards ─────────────────────────────── */}
+      {/* ── Animated metric cards with stagger ────────────────── */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5 mb-6 row-animate">
         <AnimatedMetricCard icon="💚" label="Receita Bruta" rawValue={tR} prefix="R$" sub="Total vendas" color="green" delay={0} />
         <AnimatedMetricCard icon="🔴" label="Despesas Op." rawValue={tD} prefix="R$" sub="Custos negócio" color="red" delay={80} />
@@ -156,9 +158,9 @@ export default async function DashboardPage() {
         <AnimatedMetricCard icon="📦" label="Fornadas" rawValue={(fornadas || []).length} sub="Registradas" color="purple" delay={320} />
       </div>
 
-      {/* ── Top row: profit split + line chart ────────────────── */}
+      {/* ── Top row: profit split (left) + chart (right) ─────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-        <Card>
+        <div className="reveal-left delay-200"><Card>
           <CardTitle text="📈 Distribuição do Lucro" />
           {[
             { label: "Antonio (90%)", val: lucro * 0.9, color: "#e5b050", pct: 90 },
@@ -218,17 +220,17 @@ export default async function DashboardPage() {
               </div>
             </div>
           )}
-        </Card>
+        </Card></div>
 
-        <Card>
+        <div className="reveal-right delay-200"><Card>
           <CardTitle text="📊 Receita vs Despesa (7 dias)" />
           <RevenueLineChart data={chartData} />
-        </Card>
+        </Card></div>
       </div>
 
       {/* ── Client ranking ────────────────────────────────────── */}
       {rankList.length > 0 && (
-        <div className="mb-4">
+        <div className="mb-4 reveal-up delay-300">
           <Card>
             <CardTitle text="🏆 Top Clientes — Faturamento Acumulado" />
             <div className="space-y-3">
@@ -269,12 +271,12 @@ export default async function DashboardPage() {
 
       {/* ── Bottom row: pie + events + bills ──────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <Card>
+        <div className="reveal-left delay-400"><Card>
           <CardTitle text="🥧 Composição Despesas" />
           <ExpensePieChart data={pieData} />
-        </Card>
+        </Card></div>
 
-        <Card>
+        <div className="reveal-up delay-500"><Card>
           <CardTitle text="📅 Próximos Eventos" />
           {!(eventos?.length) ? (
             <p className="text-sm" style={{ color: "#6a5438" }}>
@@ -329,9 +331,9 @@ export default async function DashboardPage() {
               );
             })
           )}
-        </Card>
+        </Card></div>
 
-        <Card>
+        <div className="reveal-right delay-400"><Card>
           <CardTitle text="⚠️ Contas Vencendo (7 dias)" />
           {!(contas?.length) ? (
             <p className="text-sm" style={{ color: "#6a5438" }}>
@@ -368,7 +370,7 @@ export default async function DashboardPage() {
               </div>
             ))
           )}
-        </Card>
+        </Card></div>
       </div>
     </div>
   );

@@ -4,10 +4,11 @@ import { LedBorder } from "@/components/layout/LedBorder";
 import { NotesWidget } from "@/components/shared/NotesWidget";
 import { HelpModal } from "@/components/shared/HelpModal";
 import { QuickSale } from "@/components/shared/QuickSale";
+import { FloatingIcons } from "@/components/shared/FloatingIcons";
+import { PageTransition } from "@/components/shared/PageTransition";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  // Fetch clients server-side so QuickSale can pre-fill price/qty
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   const { data: clientes } = user
@@ -20,10 +21,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <>
-      {/* Ambient LED frame */}
+      {/* ── Ambient layer (behind everything) ── */}
       <LedBorder />
+      <FloatingIcons />
 
       <Header />
+
+      {/* Tagline strip */}
       <div
         className="text-center py-1.5 text-xs italic tracking-wide no-print"
         style={{
@@ -34,13 +38,16 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       >
         🙏 &nbsp;"Deus seja louvado" &nbsp;·&nbsp; Feito à mão desde 2002 &nbsp;·&nbsp; Garanhuns, PE
       </div>
+
       <Nav />
-      <main
-        className="animate-fade-in"
-        style={{ maxWidth: 1440, margin: "0 auto", padding: "28px 24px 40px" }}
-      >
-        {children}
+
+      {/* Main content with page-enter animation on every route change */}
+      <main style={{ maxWidth: 1440, margin: "0 auto", padding: "28px 24px 40px" }}>
+        <PageTransition>
+          {children}
+        </PageTransition>
       </main>
+
       <footer
         className="text-center mt-8 no-print"
         style={{
@@ -49,18 +56,21 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           padding: "28px",
         }}
       >
-        <div style={{ fontFamily: "Pacifico, cursive", color: "#e5b050", fontSize: "1.3em", marginBottom: 6 }}>
+        <div
+          className="reveal-up"
+          style={{ fontFamily: "Pacifico, cursive", color: "#e5b050", fontSize: "1.3em", marginBottom: 6 }}
+        >
           Doces 3 Irmãos
         </div>
-        <div style={{ color: "#a08868", fontSize: "0.78em", fontStyle: "italic", marginBottom: 8 }}>
+        <div className="reveal-up delay-100" style={{ color: "#a08868", fontSize: "0.78em", fontStyle: "italic", marginBottom: 8 }}>
           🙏 "Deus seja louvado" — Feito com amor desde 2002
         </div>
-        <div style={{ color: "#503c20", fontSize: "0.7em" }}>
+        <div className="reveal-up delay-200" style={{ color: "#503c20", fontSize: "0.7em" }}>
           Sistema de Gestão · Doces 3 Irmãos · Garanhuns, PE · 2026
         </div>
       </footer>
 
-      {/* Floating widgets — fixed position, all pages */}
+      {/* Floating widgets */}
       <QuickSale clientes={clientes || []} />
       <NotesWidget />
       <HelpModal />
